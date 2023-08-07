@@ -7,6 +7,7 @@ const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
 const categoryRoute = require("./routes/categories");
 const multer = require("multer");
+const path = require("path");
 dotenv.config();
 
 app.use(express.json());
@@ -35,6 +36,7 @@ app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/posts", postRoute);
 app.use("/categories", categoryRoute);
+
 app.listen("5000", () => {
 
     console.log("Backend is running on Port 5000")
