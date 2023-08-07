@@ -11,6 +11,7 @@ const path = require("path");
 dotenv.config();
 
 app.use(express.json());
+app.use("/images", express.static(path.join(__dirname, "/images")));
 mongoose.connect(process.env.MONGO_URL, {
 
 }).then(console.log("Connected to MongoDB")).catch((err) => console.log(err));
@@ -28,7 +29,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 
-app.post("/api/upload", upload.single("file"), (req, res) => {
+app.post("/upload", upload.single("file"), (req, res) => {
     res.status(200).json("File has been uploaded");
 });
 
