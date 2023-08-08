@@ -1,10 +1,28 @@
 const router = require("express").Router();
 const User = require("../models/User");
 const Post = require("../models/Post");
+const jwt = require("jsonwebtoken");
+
+const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key_here"; // Preferably use environment variable
+
+// A middleware to authenticate users
+const authenticate = (req, res, next) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(403).json({ error: "A token is required for authentication" });
+
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) return res.status(403).json({ error: "Token is not valid" });
+        req.user = user;
+        next();
+    });
+};
 
 //CREATE POST
-router.post("/", async (req, res) => {
-    const newPost = new Post(req.body);
+router.post("/", authenticate, async (req, res) => {
+    const newPost = new Post({
+        ...req.body,
+        username: req.user.username
+    });
     try {
         const savedPost = await newPost.save();
         res.status(200).json(savedPost);
@@ -14,10 +32,10 @@ router.post("/", async (req, res) => {
 });
 
 //UPDATE POST
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticate, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
-        if (post.username === req.body.username) {
+        if (post.username === req.user.username) {
             try {
                 const updatedPost = await Post.findByIdAndUpdate(
                     req.params.id,
@@ -39,10 +57,10 @@ router.put("/:id", async (req, res) => {
 });
 
 //DELETE POST
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticate, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
-        if (post.username === req.query.username) {
+        if (post.username === req.user.username) {
             try {
                 await Post.findByIdAndDelete(req.params.id);
                 res.status(200).json("Post has been deleted...");
@@ -56,9 +74,6 @@ router.delete("/:id", async (req, res) => {
         res.status(500).json(err.message);
     }
 });
-
-
-
 
 //GET POST
 router.get("/:id", async (req, res) => {

@@ -1,4 +1,6 @@
 const express = require("express");
+
+require('dotenv').config();
 const app = express();
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
@@ -7,43 +9,48 @@ const userRoute = require("./routes/users");
 const postRoute = require("./routes/posts");
 const categoryRoute = require("./routes/categories");
 const multer = require("multer");
+const upload = multer({ dest: 'uploads/' });
 const path = require("path");
+const PORT = process.env.PORT || 5002;
+const cors = require('cors');
+const { db } = require('../backend/middleware/db');
+const cloudinary = require('./cloudinaryConfig');
 
-// const cors = require('cors');
+
 dotenv.config();
 
 app.use(express.json());
-// app.use(cors());
-app.use("/images", express.static(path.join(__dirname, "/images")));
-mongoose.connect(process.env.MONGO_URL, {
+app.use(cors());
 
-}).then(console.log("Connected to MongoDB")).catch((err) => console.log(err));
+app.post('/image/upload', upload.single('image'), (req, res) => {
+    // req.file is the 'image' file
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "images"); // set the destination to the images folder
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname)); // generate a unique filename using the current timestamp
-    },
+    // Upload the image to Cloudinary
+    cloudinary.uploader.upload(req.file.path, (error, result) => {
+        if (error) {
+            console.error('Upload error:', error);
+            res.status(500).json({ message: 'Error uploading image to Cloudinary.' });
+        } else {
+            console.log('Upload result:', result);
+            res.status(200).json({ imageUrl: result.secure_url });
+        }
+    });
 });
 
-const upload = multer({ storage: storage });
 
 
 
-app.post("/upload", upload.single("file"), (req, res) => {
-    res.status(200).json("File has been uploaded");
-}, (error, req, res, next) => { // Error handling middleware
-    res.status(400).json({ error: error.message });
-});
+
+
 
 app.use("/auth", authRoute);
 app.use("/users", userRoute);
 app.use("/posts", postRoute);
 app.use("/categories", categoryRoute);
 
-app.listen("5000", () => {
+const server = async () => {
+    db();
+    app.listen(PORT, () => console.log(`Server is running on Port: ${PORT}`))
+};
 
-    console.log("Backend is running on Port 5000")
-});
+server();
