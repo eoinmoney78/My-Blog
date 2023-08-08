@@ -1,4 +1,4 @@
-// import { ContextProvider } from "./context/Context";
+import { ContextProvider } from "./context/Context";
 import TopBar from "./components/topbar/TopBar";
 import Homepage from "./pages/homepage/Homepage";
 import Login from "./pages/login/Login";

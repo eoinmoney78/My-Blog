@@ -58,6 +58,10 @@
     margin-top: 15px;
     font-size: 1.2em;
   }
+  .loginButton:disabled{
+    cursor: not-allowed;
+    background-color: coral;
+  }
   
   .loginButton:hover {
     background-color: #ff6347;
