@@ -4,6 +4,7 @@
 
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const JWT = process.env.JWT;
 
 
 const validateSession = async (req, res, next) => {

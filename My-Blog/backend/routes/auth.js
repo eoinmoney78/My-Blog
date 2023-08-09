@@ -20,8 +20,8 @@ router.post("/register", async (req, res) => {
         const user = await newUser.save();
         const { password, ...others } = user._doc;
 
-        // Generate JWT token for the user
-        const token = jwt.sign({ id: user._id }, JWT, { expiresIn: "1h" });
+        // Generate JWT token for the user, now including username
+        const token = jwt.sign({ id: user._id, username: user.username }, JWT, { expiresIn: "1h" });
 
         res.status(201).json({ ...others, token });
     } catch (err) {
@@ -42,8 +42,8 @@ router.post("/login", async (req, res) => {
 
         const { password, ...others } = user._doc;
 
-        // Generate JWT token for the user
-        const token = jwt.sign({ id: user._id }, JWT, { expiresIn: "24h" });
+        // Generate JWT token for the user, now including username
+        const token = jwt.sign({ id: user._id, username: user.username }, JWT, { expiresIn: "24h" });
 
         res.status(200).json({ ...others, token });
     } catch (err) {
@@ -52,4 +52,3 @@ router.post("/login", async (req, res) => {
 });
 
 module.exports = router;
-

@@ -4,8 +4,8 @@ const User = require('../models/User');
 
 const Post = require("../models/Post");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-
+// const jwt = require('jsonwebtoken');
+const JWT = process.env.JWT;
 const { validateSession } = require('../middleware');
 
 

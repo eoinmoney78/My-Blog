@@ -1,8 +1,8 @@
+require('dotenv').config();
 const express = require("express");
 
-require('dotenv').config();
 const app = express();
-const dotenv = require("dotenv");
+
 const mongoose = require("mongoose");
 const authRoute = require("./routes/auth");
 const userRoute = require("./routes/users");
@@ -17,9 +17,11 @@ const { db } = require('../backend/middleware/db');
 const cloudinary = require('./cloudinaryConfig');
 
 
-dotenv.config();
+
 
 app.use(express.json());
+app.use('/static', express.static('public'));
+
 app.use(cors());
 
 app.post('/image/upload', upload.single('image'), (req, res) => {
