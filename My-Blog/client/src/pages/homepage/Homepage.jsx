@@ -15,14 +15,15 @@ function HomePage() {
     const fetchPosts = async () => {
       try {
         const res = await axios.get("/posts" + search);
-        setPosts(res.data);
+        setPosts(res.data.data); // <-- Here's the change
       } catch (err) {
         console.error(err);
       }
     };
     fetchPosts();
-  }, [search]);
-  
+}, [search]);
+
+
   return (
     <>
       <Header />
