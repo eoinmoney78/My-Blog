@@ -3,14 +3,14 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
 
-const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key_here"; // Preferably use environment variable
+const JWT = process.env.JWT;
 
 // A middleware to authenticate users
-const authenticate = (req, res, next) => {
+const validate = (req, res, next) => {
     const token = req.headers["authorization"];
     if (!token) return res.status(403).json({ error: "A token is required for authentication" });
 
-    jwt.verify(token, SECRET_KEY, (err, user) => {
+    jwt.verify(token, JWT, (err, user) => {
         if (err) return res.status(403).json({ error: "Token is not valid" });
         req.user = user;
         next();
@@ -18,7 +18,7 @@ const authenticate = (req, res, next) => {
 };
 
 //CREATE POST
-router.post("/", authenticate, async (req, res) => {
+router.post("/", User.validate, async (req, res) => {
     const newPost = new Post({
         ...req.body,
         username: req.user.username
@@ -32,7 +32,7 @@ router.post("/", authenticate, async (req, res) => {
 });
 
 //UPDATE POST
-router.put("/:id", authenticate, async (req, res) => {
+router.put("/:id", validate, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
         if (post.username === req.user.username) {
@@ -57,7 +57,7 @@ router.put("/:id", authenticate, async (req, res) => {
 });
 
 //DELETE POST
-router.delete("/:id", authenticate, async (req, res) => {
+router.delete("/:id", validate, async (req, res) => {
     try {
         const post = await Post.findById(req.params.id);
         if (post.username === req.user.username) {

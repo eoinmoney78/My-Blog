@@ -3,7 +3,7 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-// const JWT = "secret"; // Ideally, move this to an environment variable
+const JWT = process.env.JWT;
 
 //REGISTER
 router.post("/register", async (req, res) => {

@@ -2,8 +2,7 @@ const router = require("express").Router();
 const Category = require("../models/Category");
 const jwt = require("jsonwebtoken");
 
-const SECRET_KEY = process.env.SECRET_KEY || "your_secret_key_here";
-
+const JWT = process.env.JWT;
 // Middleware to authenticate users
 const authenticate = (req, res, next) => {
     const token = req.headers["authorization"];
